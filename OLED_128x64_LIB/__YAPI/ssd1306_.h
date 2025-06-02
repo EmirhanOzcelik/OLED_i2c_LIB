@@ -16,13 +16,7 @@
 #define __DONME_180 2
 #define __DONME_270 3
 
-#if defined(__AVR__)
 #define __SSD_ADRES 0x3C
-
-#elif defined(ESP8266) || defined(ESP32)
-#define __SSD_ADRES 0x3C
-
-#endif
 
 // Güç ve temel kontrol
 #define __SSD_EKRAN_KAPAT 0xAE     // Ekranı kapat
