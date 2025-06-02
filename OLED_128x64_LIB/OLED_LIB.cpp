@@ -23,7 +23,7 @@ oled::oled(uint8_t ekran_x_, uint8_t ekran_y_)
     geometri.cizgi.sil.sil_cizgi_priv = this;
     geometri.cizgi.ciz.ciz_cizgi_priv = this;
 
-    buffer = new uint8_t[__SSD_PAKET_MAX]; // satır başına 1 byte
+    buffer = new uint8_t[__SSD_PAKET_MAX]; 
     memset(buffer, 0, __SSD_PAKET_MAX);
 }
 oled::~oled()
