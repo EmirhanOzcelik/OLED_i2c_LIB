@@ -31,21 +31,21 @@ void oled::ayarla::ekran_kapa()
 }
 void oled::ayarla::ters_cevir()
 {
-    ayar_priv->komut_gonder(__SSD_SEGMENT_TERS);    // Horizontal segment remap (X ekseni ters çevir)
-    ayar_priv->komut_gonder(__SSD_COM_TERS_TARAMA); // COM output scan direction (Y ekseni ters çevir)
+    ayar_priv->komut_gonder(__SSD_SEGMENT_TERS);   
+    ayar_priv->komut_gonder(__SSD_COM_TERS_TARAMA); 
 }
 void oled::ayarla::duze_cevir()
 {
-    ayar_priv->komut_gonder(__SSD_SEGMENT_NORMAL);    // Normal X ekseni
-    ayar_priv->komut_gonder(__SSD_COM_TARAMA_NORMAL); // Normal Y ekseni
+    ayar_priv->komut_gonder(__SSD_SEGMENT_NORMAL);    
+    ayar_priv->komut_gonder(__SSD_COM_TARAMA_NORMAL); 
 }
 void oled::ayarla::renkleri_ters_cevir()
 {
-    ayar_priv->komut_gonder(__SSD_EKRAN_INVERT_ACIK); // Invert display on
+    ayar_priv->komut_gonder(__SSD_EKRAN_INVERT_ACIK); 
 }
 void oled::ayarla::renkleri_normale_cevir()
 {
-    ayar_priv->komut_gonder(__SSD_EKRAN_INVERT_KAPALI); // Normal display (invert off)
+    ayar_priv->komut_gonder(__SSD_EKRAN_INVERT_KAPALI); 
 }
 void oled::font_sec(uint8_t num)
 {
@@ -84,8 +84,6 @@ void oled::karakter_yaz(uint8_t x, uint8_t y, char ch, bool hizli_mod)
 
     uint8_t satir_byte_sayisi = (yukseklik + 7) / 8;
     uint16_t index = 4 + (ch - ilk_karakter) * (genislik * satir_byte_sayisi);
-
-    // Sadece hızlı mod ve 8 piksel yüksekliğe kadar olan fontlar için optimize çizim
     if (hizli_mod && yukseklik <= 8 && (y % 8 == 0))
     {
         uint8_t page = y / 8;
@@ -97,19 +95,14 @@ void oled::karakter_yaz(uint8_t x, uint8_t y, char ch, bool hizli_mod)
         }
     }
     else
-    {
-        // Diğer tüm durumlarda normal bitmap çizimi kullan
         bitmap_ciz(x, y, yazilacak_genislik, yukseklik, &_font[index]);
-    }
 }
 
 void oled::bitmap_ciz(uint8_t x, uint8_t y, uint8_t genislik, uint8_t yukseklik, const uint8_t *veri)
 {
     uint8_t flipMod = ayarla.bitmap._flip_mod;
     uint8_t donmeMod = ayarla.bitmap._donme_mod;
-
     uint8_t byte_height = (yukseklik + 7) / 8;
-
     for (uint8_t i = 0; i < genislik; i++)
     {
         for (uint8_t b = 0; b < byte_height; b++)
@@ -121,17 +114,12 @@ void oled::bitmap_ciz(uint8_t x, uint8_t y, uint8_t genislik, uint8_t yukseklik,
                 uint8_t py = b * 8 + bit;
                 if (py >= yukseklik)
                     continue;
-
                 if (!(data & (1 << bit)))
                     continue;
-
-                // Aynalama işlemleri
                 if (flipMod == __FLIP_X || flipMod == __FLIP_XY)
                     px = genislik - 1 - px;
                 if (flipMod == __FLIP_Y || flipMod == __FLIP_XY)
                     py = yukseklik - 1 - py;
-
-                // Döndürme işlemleri
                 uint8_t ekran_x = x, ekran_y = y;
                 switch (donmeMod)
                 {
@@ -152,7 +140,6 @@ void oled::bitmap_ciz(uint8_t x, uint8_t y, uint8_t genislik, uint8_t yukseklik,
                     ekran_y += px;
                     break;
                 }
-
                 if (ekran_x < __EKRAN_GENISLIK && ekran_y < __EKRAN_YUKSEKLIK)
                     pixel_ac(ekran_x, ekran_y);
             }
