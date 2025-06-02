@@ -66,32 +66,24 @@ bool oled::kur()
     guncelle();
     return true;
 }
-void oled::sil()
-{
-    memset(buffer, 0, __SSD_PAKET_MAX);
-}
-
+void oled::sil() { memset(buffer, 0, __SSD_PAKET_MAX); }
 void oled::guncelle()
 {
     for (uint8_t sayfa = 0; sayfa < (__EKRAN_YUKSEKLIK / 8); sayfa++)
     {
         komut_gonder(__SSD_SAYFA_ADRESI_BAZ + sayfa);
-
-        // Sütun adresini her sayfa için 0'dan başlat:
-        komut_gonder(0x00); // Sütun adres alt bitleri (0)
-        komut_gonder(0x10); // Sütun adres üst bitleri (0)
-
+        komut_gonder(0x00); 
+        komut_gonder(0x10); 
         veri_gonder(&buffer[sayfa * __EKRAN_GENISLIK], __EKRAN_GENISLIK);
     }
 }
-
 inline void oled::komut_gonder(uint8_t cmd)
 {
 #if defined(__AVR__)
     i2c_baslat();
-    i2c_yaz(__SSD_ADRES << 1); // I2C adres + yazma
-    i2c_yaz(0x00);             // Komut kontrol byte'ı
-    i2c_yaz(cmd);              // Komut
+    i2c_yaz(__SSD_ADRES << 1); 
+    i2c_yaz(0x00);            
+    i2c_yaz(cmd);            
     i2c_durdur();
 #elif defined(ESP8266) || defined(ESP32)
     Wire.beginTransmission(__SSD_ADRES);
@@ -100,20 +92,16 @@ inline void oled::komut_gonder(uint8_t cmd)
     Wire.endTransmission();
 #endif
 }
-
 inline void oled::veri_gonder(uint8_t *data, size_t len)
 {
 #if defined(__AVR__)
     i2c_baslat();
-    i2c_yaz(__SSD_ADRES << 1); // I2C adres + yazma
-    i2c_yaz(0x40);             // Veri kontrol byte'ı
-
+    i2c_yaz(__SSD_ADRES << 1); 
+    i2c_yaz(0x40);           
     const uint8_t *p = data;
     const uint8_t *end = p + len;
     while (p < end)
-    {
         i2c_yaz(*p++);
-    }
     i2c_durdur();
 #elif defined(ESP8266) || defined(ESP32)
     const uint8_t *p = data;
@@ -123,30 +111,21 @@ inline void oled::veri_gonder(uint8_t *data, size_t len)
         Wire.beginTransmission(__SSD_ADRES);
         Wire.write(0x40);
         for (uint8_t i = 0; i < 32 && p < end; i++)
-        {
             Wire.write(*p++);
-        }
         Wire.endTransmission();
     }
 #endif
 }
-
 void oled::pixel_ac(uint8_t x, uint8_t y)
 {
     if (x < __EKRAN_GENISLIK && y < __EKRAN_YUKSEKLIK)
-    {
         buffer[((y) >> 3) * __EKRAN_GENISLIK + (x)] |= (1 << ((y) & 0x07));
-    }
 }
-
 void oled::pixel_kapa(uint8_t x, uint8_t y)
 {
     if (x < __EKRAN_GENISLIK && y < __EKRAN_YUKSEKLIK)
-    {
         buffer[((y) >> 3) * __EKRAN_GENISLIK + (x)] &= ~(1 << ((y) & 0x07));
-    }
 }
-
 bool oled::pixel_kontrol(uint8_t x, uint8_t y)
 {
     uint8_t *p = buffer + x + (y >> 3) * __EKRAN_GENISLIK;
